@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0de0a05773a3454bb2d177210f2d753
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 159610
+  packageName: Fighting Game Level - Basic Training Stage
+  packageVersion: 1.0
+  assetPath: Assets/GDR_FightingGameCharacters/Scenes/Stage_BasicTraining/TrainingStage_PostProfile.asset
+  uploadId: 344044
