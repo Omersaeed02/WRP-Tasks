@@ -157,7 +157,7 @@ GameObject:
   - component: {fileID: 2827207089756808104}
   - component: {fileID: 3194763593798146335}
   - component: {fileID: 1749580037312436101}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Trigger
   m_TagString: Plane_End
   m_Icon: {fileID: 0}
@@ -530,7 +530,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cbd643afad71c8d48b62f9e8e5dc68b4, type: 2}
+  - {fileID: 2100000, guid: de11cb3ee1437994db1af4128d38b4ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -928,7 +928,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cbd643afad71c8d48b62f9e8e5dc68b4, type: 2}
+  - {fileID: 2100000, guid: de11cb3ee1437994db1af4128d38b4ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1389,7 +1389,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cbd643afad71c8d48b62f9e8e5dc68b4, type: 2}
+  - {fileID: 2100000, guid: de11cb3ee1437994db1af4128d38b4ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

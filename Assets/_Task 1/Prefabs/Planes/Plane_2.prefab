@@ -983,7 +983,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cbd643afad71c8d48b62f9e8e5dc68b4, type: 2}
+  - {fileID: 2100000, guid: de11cb3ee1437994db1af4128d38b4ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1188,7 +1188,7 @@ GameObject:
   - component: {fileID: 7618223398208553323}
   - component: {fileID: 5294944581293782087}
   - component: {fileID: 6490154835542764127}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Trigger
   m_TagString: Plane_End
   m_Icon: {fileID: 0}

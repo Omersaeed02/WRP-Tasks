@@ -16,6 +16,7 @@ public class Task1Manager : MonoBehaviour
     
     public List<PlaneHandler> spawnedPlanes { get; private set; }
 
+    public List<GameObject> rideableMobs = new();
     
     private int _currentPlaneIndex;
 

@@ -169,6 +169,7 @@ MonoBehaviour:
   - {fileID: -23535631227740016, guid: d5c2314b9bb596a4f837779b2f340fd8, type: 3}
   - {fileID: 4892446759109670023, guid: 429945647648def468c3139f85c87752, type: 3}
   - {fileID: -4050948164264698802, guid: 89c2c14ccf7148f49bcd1a0a0d9da865, type: 3}
+  rideableMobs: []
 --- !u!1 &885021354
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,7 +325,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
