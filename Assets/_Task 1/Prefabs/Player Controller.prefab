@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45afa2c5e3732c14f98c283020872b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSpeed: 5
   speed: 7
   strafeSpeed: 12
   playerState: 0
@@ -174,6 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8744883167338006711}
   - component: {fileID: 8744883167345731409}
+  - component: {fileID: 4396862363957073050}
   m_Layer: 0
   m_Name: PracticeCharacter
   m_TagString: Untagged
@@ -220,6 +222,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4396862363957073050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8744883167338304663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691ccea45f5668e458690b129523b065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 6460760392888667250}
 --- !u!1 &8744883167338304775
 GameObject:
   m_ObjectHideFlags: 0

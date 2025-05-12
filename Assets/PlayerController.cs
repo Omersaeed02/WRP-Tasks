@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
     private Task1Manager _task1Manager;
     private Rigidbody _rb;
     
+    public float maxSpeed = 5f;
+    
     public float speed = 5f;
     public float strafeSpeed = 10f;
 
@@ -35,6 +37,26 @@ public class PlayerController : MonoBehaviour
         PlayerMovement();
     }
 
+    private void FixedUpdate()
+    {
+        LimitVelocity();
+    }
+    
+    private void LimitVelocity()
+    {
+        // if (_rb.linearVelocity.magnitude > maxSpeed)
+        // {
+        //     _rb.linearVelocity = _rb.linearVelocity.normalized * maxSpeed;
+        // }
+        
+        var horizontalVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+        if (horizontalVelocity.magnitude > maxSpeed)
+        {
+            Vector3 clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
+            _rb.linearVelocity = new Vector3(clampedHorizontal.x, _rb.linearVelocity.y, clampedHorizontal.z);
+        }
+    }
+    
     public void PlayerMovement()
     {
         if (playerState == PlayerState.Riding)
@@ -56,7 +78,7 @@ public class PlayerController : MonoBehaviour
             transform.Translate(Vector3.right * (strafeSpeed * Time.deltaTime));
         }
         
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)|| Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)|| Input.GetKeyDown(KeyCode.UpArrow) && playerState == PlayerState.Riding)
         {
             // transform.For(Vector3.up * (strafeSpeed * Time.deltaTime));
             _rb.AddForce((transform.up + transform.forward) * 8f, ForceMode.Impulse);
