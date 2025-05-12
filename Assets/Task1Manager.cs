@@ -23,7 +23,7 @@ public class Task1Manager : MonoBehaviour
     
     private void Awake()
     {
-        playerController.task1Manager = this;
+        playerController.SetTaskManager(this);
         
         spawnedPlanes = new List<PlaneHandler>();
         
