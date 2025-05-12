@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     public float speed = 5f;
     public float strafeSpeed = 10f;
 
+    public PlayerState playerState = PlayerState.Idle;
+    // public bool traslateForward;
+    
     private void Awake()
     {
         Camera.main.transform.SetParent(transform);
@@ -15,8 +18,15 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         // Move the cube forward along the Z-axis
-        transform.Translate(Vector3.forward * (speed * Time.deltaTime));
-
+        if (playerState == PlayerState.Riding)
+        {
+            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+        }
+        else
+        {
+            Debug.Log("is not riding");
+        }
+            
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             transform.Translate(Vector3.left * (strafeSpeed * Time.deltaTime));
@@ -35,4 +45,13 @@ public class PlayerController : MonoBehaviour
             task1Manager.PlayerTriggeredPlaneEnd();
         }
     }
+}
+
+public enum PlayerState
+{
+    Idle,
+    Riding,
+    Jumping,
+    Falling,
+    Downed
 }
