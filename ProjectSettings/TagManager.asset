@@ -8,11 +8,12 @@ TagManager:
   - Plane_End
   - Obstacle
   - Floor
+  - Mob
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Floor
   - Water
   - UI
   - PlaneTrigger

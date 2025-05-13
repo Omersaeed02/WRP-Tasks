@@ -7,17 +7,20 @@ using Random = UnityEngine.Random;
 
 public class PlaneHandler : MonoBehaviour
 {
+    public int planeIndex;
+    
     public Transform obstacleParent;
-    public List<Transform> obstacles;
+    public ObstacleSO obstacleSO;
+    // public List<Transform> obstacles;
     
     private readonly (float negX, float posX, float negZ, float posZ) _obstacleSpawnRange = (-2.5f, 3.5f, -4f, 4f);
 
     private List<Transform> _spawnedObstacles = new();
     
-    public void Awake()
-    {
-        SpawnObstacles();
-    }
+    // public void OnEnable()
+    // {
+    //     SpawnObstacles();
+    // }
 
     public void RedoObstacles()
     {
@@ -29,6 +32,10 @@ public class PlaneHandler : MonoBehaviour
 
     private void SpawnObstacles()
     {
+        if (planeIndex < 2) return;
+        
+        Debug.Log("Test");
+        
         var spawnAmount = GetRandomValue(new RandomSelection(1, 2, 0.8f), new RandomSelection(3, 0.2f));
         
         for (var i = 0; i < spawnAmount; i++)
@@ -37,10 +44,10 @@ public class PlaneHandler : MonoBehaviour
             var z = Random.Range(_obstacleSpawnRange.negZ, _obstacleSpawnRange.posZ);
             
 
-            var obstacle = Instantiate(obstacles[Random.Range(0, obstacles.Count)], obstacleParent);
+            var obstacle = Instantiate(obstacleSO.obstacles[Random.Range(0, obstacleSO.obstacles.Count)], obstacleParent);
             _spawnedObstacles.Add(obstacle);
             
-            obstacle.localPosition = new Vector3(x, 0.1f, z);
+            obstacle.localPosition = new Vector3(x, 0f, z);
         }
     }
     

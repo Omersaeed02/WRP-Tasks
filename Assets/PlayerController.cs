@@ -1,31 +1,35 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Task1Manager _task1Manager;
+    public Task1Manager Task1Manager { get; private set; }
+    private Collider _collider;
     private Rigidbody _rb;
+    private MobHandler _ridingMob;
+
+    public Transform mobDeleteTrigger;
+    public Animator playerAnimator;
+    
+    public PlayerState playerState = PlayerState.Idle;
     
     public float maxSpeed = 5f;
     
     public float speed = 5f;
-    public float strafeSpeed = 10f;
-
-    public PlayerState playerState = PlayerState.Idle;
-
-    public Animator playerAnimator;
 
     // public bool translateForward;
 
     public void SetTaskManager(Task1Manager tm)
     {
-        _task1Manager = tm;
+        Task1Manager = tm;
     }
 
     private void Awake()
     {
+        _collider = GetComponent<Collider>();
         _rb = GetComponent<Rigidbody>();
-        Camera.main.transform.SetParent(transform);
+        if (Camera.main != null) Camera.main.transform.SetParent(transform);
         playerState = PlayerState.Falling;
     }
 
@@ -34,55 +38,59 @@ public class PlayerController : MonoBehaviour
         // Move the cube forward along the Z-axis
         SetAnimationState();
         
-        PlayerMovement();
+        // PlayerMovement();
     }
 
     private void FixedUpdate()
     {
+        PlayerMovement();
         LimitVelocity();
     }
     
     private void LimitVelocity()
     {
-        // if (_rb.linearVelocity.magnitude > maxSpeed)
-        // {
-        //     _rb.linearVelocity = _rb.linearVelocity.normalized * maxSpeed;
-        // }
-        
         var horizontalVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
         if (horizontalVelocity.magnitude > maxSpeed)
         {
-            Vector3 clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
+            var clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
             _rb.linearVelocity = new Vector3(clampedHorizontal.x, _rb.linearVelocity.y, clampedHorizontal.z);
         }
     }
     
     public void PlayerMovement()
     {
-        if (playerState == PlayerState.Riding)
-        {
-            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
-        }
-        else
-        {
-            Debug.Log("is not riding");
-        }
-            
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.Translate(Vector3.left * (strafeSpeed * Time.deltaTime));
+            _ridingMob.StrafeMob(1);
         }
         
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
-            transform.Translate(Vector3.right * (strafeSpeed * Time.deltaTime));
+            _ridingMob.StrafeMob(-1);
         }
         
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)|| Input.GetKeyDown(KeyCode.UpArrow) && playerState == PlayerState.Riding)
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) && playerState == PlayerState.Riding)
         {
-            // transform.For(Vector3.up * (strafeSpeed * Time.deltaTime));
-            _rb.AddForce((transform.up + transform.forward) * 8f, ForceMode.Impulse);
+            transform.SetParent(null);
+            
+            speed = _ridingMob.GetSpeed();
+            _ridingMob.SetSpeed(0);
+            _ridingMob.RemovePlayerController();
+            
+            _collider.enabled = true;
+            _rb.useGravity = true;
+            _rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
             playerState = PlayerState.Jumping;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            
+        }
+        
+        if (playerState == PlayerState.Jumping)
+        {
+            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
         }
     }
     
@@ -114,18 +122,45 @@ public class PlayerController : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other);
+        
         if (other.transform.CompareTag("Plane_End"))
         {
-            _task1Manager.PlayerTriggeredPlaneEnd();
+            Task1Manager.PlayerTriggeredPlaneEnd();
+        }
+        
+        if (other.transform.CompareTag("Floor"))
+        {
+            playerState = PlayerState.Downed;
+            _rb.useGravity = false;
+            _rb.linearVelocity = Vector3.zero;
+            transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
+        }
+        
+        if (other.transform.CompareTag("Mob") || _ridingMob == null)
+        {
+            RideMob(other.gameObject);
         }
     }
 
-    private void OnCollisionEnter(Collision other)
+    public void RideMob(GameObject mob)
     {
-        if (other.transform.CompareTag("Floor"))
-        {
-            playerState = PlayerState.Riding;
-        }
+        playerState = PlayerState.Riding;
+        _ridingMob = mob.GetComponent<MobHandler>();
+        _ridingMob.SetSpeed(speed);
+        _ridingMob.SetPlayerController(this);
+        speed = 0f;
+        
+        _rb.useGravity = false;
+        _rb.linearVelocity = Vector3.zero;
+        
+        transform.SetParent(_ridingMob.playerPoint);
+        transform.localPosition = Vector3.zero;
+        _ridingMob.stopped = false;
+
+        _collider.enabled = false;
+        _ridingMob.AddComponent<Rigidbody>();
+        _ridingMob.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
     }
 }
 

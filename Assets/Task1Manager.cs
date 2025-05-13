@@ -10,9 +10,11 @@ public class Task1Manager : MonoBehaviour
     
     
     public PlayerController playerController;
+    public Transform mobDeleteTrigger;
     
     
-    public List<PlaneHandler> planes = new();
+    public PlaneSO planeSO;
+    // public List<PlaneHandler> planes = new();
     
     public List<PlaneHandler> spawnedPlanes { get; private set; }
 
@@ -29,7 +31,10 @@ public class Task1Manager : MonoBehaviour
         
         for (var i = 0; i < 9; i++)
         {
-            var plane = Instantiate(planes[i % 3]);
+            var plane = Instantiate(planeSO.planes[i % 3]);
+            
+            plane.planeIndex = i;
+            plane.RedoObstacles();
             
             if (_currentPlaneIndex == 0) plane.transform.position = new Vector3(0, 0, -20);
             else plane.transform.position = spawnedPlanes[_currentPlaneIndex - 1].transform.position + new Vector3(0, 0, 20f);
@@ -76,7 +81,11 @@ public class Task1Manager : MonoBehaviour
 
         _currentPlaneIndex = 1;
     }
-    
+
+    private void Update()
+    {
+        mobDeleteTrigger.position = playerController.mobDeleteTrigger.position;
+    }
 }
 
 #region Helpers

@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 4222698542035863473}
   - component: {fileID: 7598554178935318749}
   - component: {fileID: 4892446759109670023}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plane_2
   m_TagString: Floor
   m_Icon: {fileID: 0}
@@ -357,21 +357,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32cacdea8e37eed41aaaa71ef9e3ab7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planeIndex: 0
   obstacleParent: {fileID: 3206295706874437850}
-  obstacles:
-  - {fileID: 2414468323389064491, guid: 633628bc31f92934a8d17f16aee6fbd4, type: 3}
-  - {fileID: 8171571777766619374, guid: 34f068c15d55fd04a8da70593763a82e, type: 3}
-  - {fileID: 6832457905558851537, guid: 0709a4d079911b34cbd5891b693c0211, type: 3}
-  - {fileID: 3756283668447601461, guid: 93a8164103d097542b73fc10e04ca410, type: 3}
-  - {fileID: 568934405666550015, guid: 3e8b2714815db154e9569e3c0cc63153, type: 3}
-  - {fileID: 1056955119450363569, guid: f6789eafacd763c449e84816861e5156, type: 3}
-  - {fileID: 4842714655266368285, guid: a59d0b18c53f7ec4e871e8054a52b7e2, type: 3}
-  - {fileID: 9121285082106863473, guid: 0c5e7b0615cb0354eaa5db5452f00cfb, type: 3}
-  - {fileID: 4358814187148015772, guid: f87941dfa134d7240a3f34754904df52, type: 3}
-  - {fileID: 2321778075439799905, guid: f7812f681d2d5d44aaf7e383655985f2, type: 3}
-  - {fileID: 5418484691152707972, guid: 4e2655b741f3a8a42866ced0d2b31533, type: 3}
-  - {fileID: 3983148787893690258, guid: b2f97e25ffe182843acbb4129dbacb5e, type: 3}
-  - {fileID: 2860048500486210936, guid: 89c0b7c2212675b4dbff9c4e837d2a45, type: 3}
+  obstacleSO: {fileID: 11400000, guid: bb6dfb277e49a984b9de8e8a0cd63ce3, type: 2}
 --- !u!1 &3176970834132453087
 GameObject:
   m_ObjectHideFlags: 0
@@ -1205,7 +1193,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.5, z: 5}
-  m_LocalScale: {x: 10, y: 6, z: 0.5}
+  m_LocalScale: {x: 10, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4678986176314093020}
