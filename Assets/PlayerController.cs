@@ -1,16 +1,19 @@
 using System;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public Task1Manager Task1Manager { get; private set; }
-    private Collider _collider;
-    private Rigidbody _rb;
+    public Collider Collider { get; private set; }
+    public Rigidbody Rb { get; private set; }
+    
     private MobHandler _ridingMob;
 
     public Transform mobDeleteTrigger;
     public Animator playerAnimator;
+    public GameObject mobChecker;
     
     public PlayerState playerState = PlayerState.Idle;
     
@@ -18,6 +21,7 @@ public class PlayerController : MonoBehaviour
     
     public float speed = 5f;
 
+    public static Action OnPlayerDowned;
     // public bool translateForward;
 
     public void SetTaskManager(Task1Manager tm)
@@ -27,18 +31,25 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _collider = GetComponent<Collider>();
-        _rb = GetComponent<Rigidbody>();
+        Collider = GetComponent<Collider>();
+        Rb = GetComponent<Rigidbody>();
         if (Camera.main != null) Camera.main.transform.SetParent(transform);
         playerState = PlayerState.Falling;
     }
 
+    private void OnEnable()
+    {
+        OnPlayerDowned += TouchGround;
+    }
+
+    private void OnDisable()
+    {
+        OnPlayerDowned -= TouchGround;
+    }
+
     private void Update()
     {
-        // Move the cube forward along the Z-axis
         SetAnimationState();
-        
-        // PlayerMovement();
     }
 
     private void FixedUpdate()
@@ -49,27 +60,27 @@ public class PlayerController : MonoBehaviour
     
     private void LimitVelocity()
     {
-        var horizontalVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
+        var horizontalVelocity = new Vector3(Rb.linearVelocity.x, 0, Rb.linearVelocity.z);
         if (horizontalVelocity.magnitude > maxSpeed)
         {
             var clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
-            _rb.linearVelocity = new Vector3(clampedHorizontal.x, _rb.linearVelocity.y, clampedHorizontal.z);
+            Rb.linearVelocity = new Vector3(clampedHorizontal.x, Rb.linearVelocity.y, clampedHorizontal.z);
         }
     }
     
     public void PlayerMovement()
     {
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && playerState == PlayerState.Riding)
         {
             _ridingMob.StrafeMob(1);
         }
         
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && playerState == PlayerState.Riding)
         {
             _ridingMob.StrafeMob(-1);
         }
         
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) && playerState == PlayerState.Riding)
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && playerState == PlayerState.Riding)
         {
             transform.SetParent(null);
             
@@ -77,21 +88,28 @@ public class PlayerController : MonoBehaviour
             _ridingMob.SetSpeed(0);
             _ridingMob.RemovePlayerController();
             
-            _collider.enabled = true;
-            _rb.useGravity = true;
-            _rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
+            Collider.enabled = true;
+            Rb.useGravity = true;
+            Rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
             playerState = PlayerState.Jumping;
+            Invoke(nameof(ActivateBeneathCheck), 0.1f);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && _mobInCheck != null)
         {
-            
+            CaptureMob();
         }
         
         if (playerState == PlayerState.Jumping)
         {
             transform.Translate(Vector3.forward * (speed * Time.deltaTime));
         }
+    }
+
+    private void ActivateBeneathCheck()
+    {
+        mobChecker.SetActive(true);
+        // Time.timeScale = 0.5f;
     }
     
     public void SetAnimationState()
@@ -119,11 +137,11 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    
+
+    private GameObject _mobInCheck;
+    private bool _firstRideDone;
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other);
-        
         if (other.transform.CompareTag("Plane_End"))
         {
             Task1Manager.PlayerTriggeredPlaneEnd();
@@ -131,18 +149,57 @@ public class PlayerController : MonoBehaviour
         
         if (other.transform.CompareTag("Floor"))
         {
-            playerState = PlayerState.Downed;
-            _rb.useGravity = false;
-            _rb.linearVelocity = Vector3.zero;
-            transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
+            OnPlayerDowned?.Invoke();
         }
         
-        if (other.transform.CompareTag("Mob") || _ridingMob == null)
+        if ((other.transform.CompareTag("Mob") || _ridingMob == null) && !_firstRideDone)
         {
             RideMob(other.gameObject);
+            _firstRideDone = true;
+        }
+        
+        else if (other.transform.CompareTag("Mob"))
+        {
+            Time.timeScale = 0.25f;
+            _mobInCheck = other.gameObject;
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.transform.CompareTag("Mob"))
+        {
+            Time.timeScale = 1f;
+            _mobInCheck = null;
+        }
+    }
+
+    public void PlayerCollided()
+    {
+        transform.SetParent(null);
+        Rb.AddForce((transform.up + transform.forward) * 4f, ForceMode.Impulse);
+        Rb.useGravity = true;
+        Collider.enabled = true;
+        playerState = PlayerState.Downed;
+    }
+    
+    public void TouchGround()
+    {
+        Time.timeScale = 1f;
+        _ridingMob = null;
+        playerState = PlayerState.Downed;
+        Rb.useGravity = false;
+        Rb.linearVelocity = Vector3.zero;
+        transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
+    }
+
+    public void CaptureMob()
+    {
+        Time.timeScale = 1f;
+        mobChecker.SetActive(false);
+        RideMob(_mobInCheck);
+    }
+    
     public void RideMob(GameObject mob)
     {
         playerState = PlayerState.Riding;
@@ -151,16 +208,18 @@ public class PlayerController : MonoBehaviour
         _ridingMob.SetPlayerController(this);
         speed = 0f;
         
-        _rb.useGravity = false;
-        _rb.linearVelocity = Vector3.zero;
+        Rb.useGravity = false;
+        Rb.linearVelocity = Vector3.zero;
         
         transform.SetParent(_ridingMob.playerPoint);
+        
+        transform.DOLocalMove(Vector3.zero, 1f);
         transform.localPosition = Vector3.zero;
         _ridingMob.stopped = false;
 
-        _collider.enabled = false;
+        Collider.enabled = false;
         _ridingMob.AddComponent<Rigidbody>();
-        _ridingMob.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+        _ridingMob.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
     }
 }
 

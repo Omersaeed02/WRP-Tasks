@@ -47,7 +47,8 @@ public class MobHandler : MonoBehaviour
     {
         if (stopped) return;
         
-        transform.Translate(Vector3.forward * (_speed * Time.deltaTime));
+        Vector3 move = new Vector3(0, 0, transform.forward.z).normalized;
+        transform.Translate(move * (_speed * Time.deltaTime), Space.World);
     }
 
     public void StrafeMob(int direction)
@@ -68,6 +69,17 @@ public class MobHandler : MonoBehaviour
         if (other.transform.CompareTag("Plane_End"))
         {
             _playerController.Task1Manager.PlayerTriggeredPlaneEnd();
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.transform.CompareTag("Obstacle"))
+        {
+            _speed = 0;
+            var temp = _playerController;
+            RemovePlayerController();
+            temp.PlayerCollided();
         }
     }
 }

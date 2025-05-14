@@ -34,8 +34,6 @@ public class PlaneHandler : MonoBehaviour
     {
         if (planeIndex < 2) return;
         
-        Debug.Log("Test");
-        
         var spawnAmount = GetRandomValue(new RandomSelection(1, 2, 0.8f), new RandomSelection(3, 0.2f));
         
         for (var i = 0; i < spawnAmount; i++)

@@ -8,17 +8,16 @@ public class Task1Manager : MonoBehaviour
 {
     public bool makeObstaclesUnique;
     
-    
     public PlayerController playerController;
     public Transform mobDeleteTrigger;
-    
     
     public PlaneSO planeSO;
     // public List<PlaneHandler> planes = new();
     
     public List<PlaneHandler> spawnedPlanes { get; private set; }
 
-    public List<GameObject> rideableMobs = new();
+    public MobSO rideableMobSO;
+    // public List<GameObject> rideableMobs = new();
     
     private int _currentPlaneIndex;
 
@@ -47,6 +46,27 @@ public class Task1Manager : MonoBehaviour
         _currentPlaneIndex = 1;
     }
 
+    private void OnEnable()
+    {
+        if (playerController != null)
+        {
+            PlayerController.OnPlayerDowned += PlayerDowned;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (playerController != null)
+        {
+            PlayerController.OnPlayerDowned -= PlayerDowned;
+        }
+    }
+
+    public void PlayerDowned()
+    {
+        
+    }
+    
     public void PlayerTriggeredPlaneEnd()
     {
         ChangePosition();

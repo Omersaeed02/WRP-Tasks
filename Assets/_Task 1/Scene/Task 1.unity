@@ -230,7 +230,7 @@ MonoBehaviour:
   playerController: {fileID: 2224439821672580893}
   mobDeleteTrigger: {fileID: 109189552}
   planeSO: {fileID: 11400000, guid: 9bfa5d2608968e545bb8a253b74e0b07, type: 2}
-  rideableMobs: []
+  rideableMobSO: {fileID: 11400000, guid: 215b3f4bb1ef1064cb82d527255c68eb, type: 2}
 --- !u!1 &885021354
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,6 +712,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6663807214257509101, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 72
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -968,9 +972,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bear
       objectReference: {fileID: 0}
+    - target: {fileID: 4974010531650499666, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7892891160734746110, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -0.11
       objectReference: {fileID: 0}
     - target: {fileID: 7892891160734746110, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -978,7 +986,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7892891160734746110, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 20.85
       objectReference: {fileID: 0}
     - target: {fileID: 7892891160734746110, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
       propertyPath: m_LocalRotation.w
