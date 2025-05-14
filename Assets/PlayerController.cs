@@ -15,10 +15,12 @@ public class PlayerController : MonoBehaviour
 
     public Transform mobDeleteTrigger;
     public Transform mobChecker;
+    public Transform cameraLocator;
     public Transform decal;
     public Animator playerAnimator;
     
     public PlayerState playerState = PlayerState.Idle;
+    public LayerMask decalMask;
     
     public float maxSpeed = 5f;
     
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour
     public static Action OnPlayerDowned;
     // public bool translateForward;
 
+    private Camera _mainCamera;
     private Coroutine _beneathCheckCoroutine;
     
     public void SetTaskManager(Task1Manager tm)
@@ -38,7 +41,8 @@ public class PlayerController : MonoBehaviour
     {
         Collider = GetComponent<Collider>();
         Rb = GetComponent<Rigidbody>();
-        if (Camera.main != null) Camera.main.transform.SetParent(transform);
+        // if (Camera.main != null) Camera.main.transform.SetParent(transform);
+        if (Camera.main != null) _mainCamera = Camera.main;
         playerState = PlayerState.Falling;
     }
 
@@ -54,11 +58,28 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        _mainCamera.transform.position = cameraLocator.position;
+        
         SetAnimationState();
 
         if (Input.GetKeyDown(KeyCode.Space) && _mobInCheck != null)
         {
             CaptureMob();
+        }
+
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && playerState == PlayerState.Riding)
+        {
+            transform.SetParent(null);
+
+            speed = _ridingMob.GetSpeed();
+            _ridingMob.SetSpeed(0);
+            _ridingMob.RemovePlayerController();
+
+            Collider.enabled = true;
+            Rb.useGravity = true;
+            Rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
+            playerState = PlayerState.Jumping;
+            _beneathCheckCoroutine = StartCoroutine(ActivateBeneathCheckCoroutine());
         }
 
     }
@@ -91,22 +112,7 @@ public class PlayerController : MonoBehaviour
             _ridingMob.StrafeMob(-1);
         }
         
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && playerState == PlayerState.Riding)
-        {
-            transform.SetParent(null);
-            
-            speed = _ridingMob.GetSpeed();
-            _ridingMob.SetSpeed(0);
-            _ridingMob.RemovePlayerController();
-            
-            Collider.enabled = true;
-            Rb.useGravity = true;
-            Rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
-            playerState = PlayerState.Jumping;
-            _beneathCheckCoroutine = StartCoroutine(ActivateBeneathCheckCoroutine());
-        }
-        
-        if (playerState == PlayerState.Jumping || playerState == PlayerState.Falling && _firstRideDone)
+        if (playerState == PlayerState.Jumping || (playerState == PlayerState.Falling && _firstRideDone))
         {
             transform.Translate(Vector3.forward * (speed * Time.deltaTime));
         }
@@ -136,10 +142,7 @@ public class PlayerController : MonoBehaviour
         while (true)
         {
             yield return yieldReturn;
-            // Physics.SphereCastNonAlloc(transform.position, 3f, Vector3.down, colliders, out var hit);
-            var hits = Physics.SphereCastAll(mobChecker.position, 3f, Vector3.down);
-
-            // hits.ToList().ForEach(t => Debug.Log(t.transform.name));
+            var hits = Physics.SphereCastAll(mobChecker.position, 2.75f, Vector3.down, 25f, decalMask);
             
             var planeHit = hits.First(t => t.transform.CompareTag("Floor"));
 
@@ -157,6 +160,7 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("Mob Found");
                 _mobInCheck = hits.First(t => t.transform.CompareTag("Mob")).transform.gameObject;
+                
                 Time.timeScale = 0.5f;
             }
             else

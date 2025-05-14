@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -67,9 +68,18 @@ public class Task1Manager : MonoBehaviour
         
     }
     
+    private float _lastTriggerTime = -Mathf.Infinity;
+    private float _triggerCooldown = 1f;
+
     public void PlayerTriggeredPlaneEnd()
     {
-        Debug.Log("Change Plane Position");
+        if (Time.time - _lastTriggerTime < _triggerCooldown)
+            return;
+
+        _lastTriggerTime = Time.time;
+
+        Debug.Log("plane end triggered");
+        
         ChangePosition();
         _currentPlaneIndex++;
     }
@@ -77,7 +87,9 @@ public class Task1Manager : MonoBehaviour
     public void ChangePosition()
     {
         if (_currentPlaneIndex < 4) return;
-
+        
+        _currentPlaneIndex = 1;
+        
         var lastPosition = spawnedPlanes[spawnedPlanes.Count - 1].transform.position;
 
         var planesToMove = spawnedPlanes.GetRange(0, 3);
@@ -100,12 +112,16 @@ public class Task1Manager : MonoBehaviour
             spawnedPlanes.Add(plane);
         }
 
-        _currentPlaneIndex = 1;
     }
 
     private void Update()
     {
         mobDeleteTrigger.position = playerController.mobDeleteTrigger.position;
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
 
