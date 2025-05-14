@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Unity.VisualScripting;
@@ -8,14 +9,14 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Task1Manager Task1Manager { get; private set; }
-    public Collider Collider { get; private set; }
-    public Rigidbody Rb { get; private set; }
     
+    private Collider _collider;
+    private Rigidbody _rb;
+    private CameraHandler _cameraHandler;
     private MobHandler _ridingMob;
 
     public Transform mobDeleteTrigger;
     public Transform mobChecker;
-    public Transform cameraLocator;
     public Transform decal;
     public Animator playerAnimator;
     
@@ -29,7 +30,6 @@ public class PlayerController : MonoBehaviour
     public static Action OnPlayerDowned;
     // public bool translateForward;
 
-    private Camera _mainCamera;
     private Coroutine _beneathCheckCoroutine;
     
     public void SetTaskManager(Task1Manager tm)
@@ -39,10 +39,9 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        Collider = GetComponent<Collider>();
-        Rb = GetComponent<Rigidbody>();
-        // if (Camera.main != null) Camera.main.transform.SetParent(transform);
-        if (Camera.main != null) _mainCamera = Camera.main;
+        _cameraHandler = Task1Manager.cameraHandler;
+        _collider = GetComponent<Collider>();
+        _rb = GetComponent<Rigidbody>();
         playerState = PlayerState.Falling;
     }
 
@@ -58,7 +57,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        _mainCamera.transform.position = cameraLocator.position;
+        _cameraHandler.transform.position = transform.position;
         
         SetAnimationState();
 
@@ -72,12 +71,12 @@ public class PlayerController : MonoBehaviour
             transform.SetParent(null);
 
             speed = _ridingMob.GetSpeed();
-            _ridingMob.SetSpeed(0);
+            _ridingMob.StopRunning();
             _ridingMob.RemovePlayerController();
 
-            Collider.enabled = true;
-            Rb.useGravity = true;
-            Rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
+            _collider.enabled = true;
+            _rb.useGravity = true;
+            _rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
             playerState = PlayerState.Jumping;
             _beneathCheckCoroutine = StartCoroutine(ActivateBeneathCheckCoroutine());
         }
@@ -92,11 +91,11 @@ public class PlayerController : MonoBehaviour
     
     private void LimitVelocity()
     {
-        var horizontalVelocity = new Vector3(Rb.linearVelocity.x, 0, Rb.linearVelocity.z);
+        var horizontalVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
         if (horizontalVelocity.magnitude > maxSpeed)
         {
             var clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
-            Rb.linearVelocity = new Vector3(clampedHorizontal.x, Rb.linearVelocity.y, clampedHorizontal.z);
+            _rb.linearVelocity = new Vector3(clampedHorizontal.x, _rb.linearVelocity.y, clampedHorizontal.z);
         }
     }
     
@@ -106,10 +105,13 @@ public class PlayerController : MonoBehaviour
         {
             _ridingMob.StrafeMob(1);
         }
-        
-        if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && playerState == PlayerState.Riding)
+        else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && playerState == PlayerState.Riding)
         {
             _ridingMob.StrafeMob(-1);
+        }
+        else if (playerState == PlayerState.Riding)
+        {
+            _ridingMob.StrafeMob(0);
         }
         
         if (playerState == PlayerState.Jumping || (playerState == PlayerState.Falling && _firstRideDone))
@@ -123,12 +125,15 @@ public class PlayerController : MonoBehaviour
     private void DeactivateBeneathCheckCoroutine()
     {
         if (_beneathCheckCoroutine == null) return;
-        
         StopCoroutine(_beneathCheckCoroutine);
         
         if (_decalInstance == null) return;
-        
         Destroy(_decalInstance.gameObject);
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(mobChecker.position, Vector3.down);
     }
     
     private IEnumerator ActivateBeneathCheckCoroutine()
@@ -142,9 +147,11 @@ public class PlayerController : MonoBehaviour
         while (true)
         {
             yield return yieldReturn;
-            var hits = Physics.SphereCastAll(mobChecker.position, 2.75f, Vector3.down, 25f, decalMask);
+            var hits = Physics.SphereCastAll(mobChecker.position, 1f, Vector3.down, 25f, decalMask);
             
-            var planeHit = hits.First(t => t.transform.CompareTag("Floor"));
+            var sortedHits = hits.OrderBy(h => h.distance).ToArray();
+            
+            var planeHit = sortedHits.FirstOrDefault(t => t.transform.CompareTag("Floor"));
 
             if (planeHit.transform != null)
             {
@@ -158,14 +165,20 @@ public class PlayerController : MonoBehaviour
             
             if (hits.Any(t => t.transform.CompareTag("Mob")))
             {
-                Debug.Log("Mob Found");
+                // Debug.Log("Mob Found");
                 _mobInCheck = hits.First(t => t.transform.CompareTag("Mob")).transform.gameObject;
+                _mobInCheck.GetComponent<MobHandler>().HighlightMob();
                 
                 Time.timeScale = 0.5f;
             }
             else
             {
-                Debug.Log("No Mob Found");
+                // Debug.Log("No Mob Found");
+                if (_mobInCheck != null)
+                {
+                    _mobInCheck.GetComponent<MobHandler>().UnhighlightMob();
+                }
+                
                 _mobInCheck = null;
                 Time.timeScale = 1f;
             }
@@ -259,9 +272,9 @@ public class PlayerController : MonoBehaviour
     {
         DeactivateBeneathCheckCoroutine();
         transform.SetParent(null);
-        Rb.AddForce((transform.up + transform.forward) * 4f, ForceMode.Impulse);
-        Rb.useGravity = true;
-        Collider.enabled = true;
+        _rb.AddForce((transform.up + transform.forward) * 4f, ForceMode.Impulse);
+        _rb.useGravity = true;
+        _collider.enabled = true;
         playerState = PlayerState.Downed;
     }
     
@@ -271,8 +284,8 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 1f;
         _ridingMob = null;
         playerState = PlayerState.Downed;
-        Rb.useGravity = false;
-        Rb.linearVelocity = Vector3.zero;
+        _rb.useGravity = false;
+        _rb.linearVelocity = Vector3.zero;
         transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
     }
 
@@ -291,11 +304,13 @@ public class PlayerController : MonoBehaviour
         playerState = PlayerState.Riding;
         _ridingMob = mob.GetComponent<MobHandler>();
         _ridingMob.SetSpeed(speed);
+        _ridingMob.UnhighlightMob();
         _ridingMob.SetPlayerController(this);
-        speed = 0f;
         
-        Rb.useGravity = false;
-        Rb.linearVelocity = Vector3.zero;
+        speed = 0f;
+        _rb.useGravity = false;
+        _rb.linearVelocity = Vector3.zero;
+        _collider.enabled = false;
         
         transform.SetParent(_ridingMob.playerPoint);
         
@@ -303,7 +318,7 @@ public class PlayerController : MonoBehaviour
         transform.localPosition = Vector3.zero;
         _ridingMob.OnStartMoving();
 
-        Collider.enabled = false;
+        // Collider.enabled = false;
         _ridingMob.AddComponent<Rigidbody>();
         _ridingMob.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
         playerState = PlayerState.Riding;

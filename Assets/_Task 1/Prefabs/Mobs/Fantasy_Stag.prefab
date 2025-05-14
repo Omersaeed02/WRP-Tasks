@@ -498,6 +498,8 @@ MonoBehaviour:
   playerPoint: {fileID: 2572218583626930384}
   strafeSpeed: 10
   stopped: 0
+  normalMaterial: {fileID: 2100000, guid: 953b697a23231014b830d1795db27c30, type: 2}
+  highlightedMaterial: {fileID: 2100000, guid: ba6b38eeb52a80848b4021ddc8a00102, type: 2}
 --- !u!95 &4769366683730732019
 Animator:
   serializedVersion: 7

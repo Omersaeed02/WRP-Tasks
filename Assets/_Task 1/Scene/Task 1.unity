@@ -209,6 +209,51 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!1 &342279370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 342279371}
+  - component: {fileID: 342279372}
+  m_Layer: 0
+  m_Name: Camera Handler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &342279371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342279370}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.000000007450581, w: 1}
+  m_LocalPosition: {x: 0, y: 1.4, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1340056431}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &342279372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342279370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3ab057c9599c1d4e8688be06d6a2235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &474401460
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   makeObstaclesUnique: 0
   playerController: {fileID: 2224439821672580893}
+  cameraHandler: {fileID: 342279372}
   mobDeleteTrigger: {fileID: 109189552}
   planeSO: {fileID: 11400000, guid: 9bfa5d2608968e545bb8a253b74e0b07, type: 2}
   rideableMobSO: {fileID: 11400000, guid: 215b3f4bb1ef1064cb82d527255c68eb, type: 2}
@@ -588,12 +634,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1340056428}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.29942313, y: -0.31331515, z: 0.104798585, w: 0.8950959}
-  m_LocalPosition: {x: 8.490744, y: 11.5, z: -10.243556}
+  m_LocalRotation: {x: 0.29942313, y: -0.31331515, z: 0.10479858, w: 0.8950959}
+  m_LocalPosition: {x: 8.490744, y: 10.121, z: -10.243556}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 342279371}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1340056432
 MonoBehaviour:
@@ -706,7 +752,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6478115102902061221, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.5
+      value: 1.379
       objectReference: {fileID: 0}
     - target: {fileID: 6478115102902061221, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -991,6 +1037,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Deer
       objectReference: {fileID: 0}
+    - target: {fileID: 6957893813199220697, guid: 1db26f05ca433744e895a1a9da7da5f9, type: 3}
+      propertyPath: stopped
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1064,7 +1114,7 @@ SceneRoots:
   - {fileID: 1273226024}
   - {fileID: 885021358}
   - {fileID: 2141994683}
-  - {fileID: 1340056431}
+  - {fileID: 342279371}
   - {fileID: 474401461}
   - {fileID: 2224439821672580891}
   - {fileID: 8243811627409970728}

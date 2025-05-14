@@ -10,6 +10,7 @@ public class Task1Manager : MonoBehaviour
     public bool makeObstaclesUnique;
     
     public PlayerController playerController;
+    public CameraHandler cameraHandler;
     public Transform mobDeleteTrigger;
     
     public PlaneSO planeSO;
@@ -78,7 +79,7 @@ public class Task1Manager : MonoBehaviour
 
         _lastTriggerTime = Time.time;
 
-        Debug.Log("plane end triggered");
+        // Debug.Log("plane end triggered");
         
         ChangePosition();
         _currentPlaneIndex++;
