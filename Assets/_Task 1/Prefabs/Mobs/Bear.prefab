@@ -814,7 +814,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPoint: {fileID: 1269260673425296945}
   strafeSpeed: 10
-  stopped: 1
+  stopped: 0
 --- !u!95 &4787415458997672454
 Animator:
   serializedVersion: 7

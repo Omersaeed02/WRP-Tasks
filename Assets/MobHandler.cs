@@ -1,13 +1,15 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MobHandler : MonoBehaviour
 {
     private PlayerController _playerController;
     private Collider _collider;
-    
+    private Animator _animator;
     public Transform playerPoint;
 
+    private readonly (float lower, float upper) _speedRange = (4.5f, 6.95f); 
     private float _speed = 7f;
     public float strafeSpeed = 10f;
     
@@ -15,7 +17,14 @@ public class MobHandler : MonoBehaviour
 
     private void Awake()
     {
+        
         _collider = GetComponent<Collider>();
+        _animator = GetComponent<Animator>();
+        
+        if (!stopped)
+            OnStartMoving();
+        
+        _speed = Random.Range(_speedRange.lower, _speedRange.upper);
     }
 
     public void SetPlayerController(PlayerController pc)
@@ -43,11 +52,17 @@ public class MobHandler : MonoBehaviour
         return _speed;
     }
 
+    public void OnStartMoving()
+    {
+        stopped = false;
+        _animator.Play("Run");
+    }
+    
     private void FixedUpdate()
     {
         if (stopped) return;
         
-        Vector3 move = new Vector3(0, 0, transform.forward.z).normalized;
+        var move = new Vector3(0, 0, transform.forward.z).normalized;
         transform.Translate(move * (_speed * Time.deltaTime), Space.World);
     }
 
@@ -70,6 +85,12 @@ public class MobHandler : MonoBehaviour
         {
             _playerController.Task1Manager.PlayerTriggeredPlaneEnd();
         }
+
+        if (other.transform.CompareTag("DeleteTrigger"))
+        {
+            
+            Destroy(gameObject);
+        }
     }
 
     private void OnCollisionEnter(Collision other)
@@ -80,6 +101,7 @@ public class MobHandler : MonoBehaviour
             var temp = _playerController;
             RemovePlayerController();
             temp.PlayerCollided();
+            _animator.Play("Death");
         }
     }
 }

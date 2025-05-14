@@ -69,6 +69,7 @@ public class Task1Manager : MonoBehaviour
     
     public void PlayerTriggeredPlaneEnd()
     {
+        Debug.Log("Change Plane Position");
         ChangePosition();
         _currentPlaneIndex++;
     }

@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - Floor
   - Mob
+  - DeleteTrigger
   layers:
   - Default
   - TransparentFX

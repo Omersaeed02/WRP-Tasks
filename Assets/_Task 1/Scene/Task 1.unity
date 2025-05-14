@@ -130,9 +130,10 @@ GameObject:
   - component: {fileID: 109189552}
   - component: {fileID: 109189551}
   - component: {fileID: 109189550}
+  - component: {fileID: 109189553}
   m_Layer: 0
   m_Name: MobDeleteTrigger
-  m_TagString: Untagged
+  m_TagString: DeleteTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -181,6 +182,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 474401461}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &109189553
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109189549}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 72
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1 &474401460
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,6 +639,11 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!4 &2051441026 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7421093581545355006, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+  m_PrefabInstance: {fileID: 2224439821672580891}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2141994681
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,10 +701,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3441757173675929212, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6083347876664139332, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
       propertyPath: m_Name
       value: Player Controller
       objectReference: {fileID: 0}
+    - target: {fileID: 6460760392888667250, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: decal
+      value: 
+      objectReference: {fileID: 8166450796945090683, guid: e4025073fa8379a4e9c548a3aeb6de5c, type: 3}
+    - target: {fileID: 6460760392888667250, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: mobChecker
+      value: 
+      objectReference: {fileID: 2051441026}
     - target: {fileID: 6478115102902061221, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -712,9 +757,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6663807214257509101, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
-      propertyPath: m_ExcludeLayers.m_Bits
-      value: 72
+    - target: {fileID: 7421093581545355006, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7421093581545355006, guid: 2c459a0c1a315e4468a03d540a9ac31a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -744,6 +793,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cow
       objectReference: {fileID: 0}
+    - target: {fileID: 534790414513959792, guid: 4204674dc81c50f4388c90e23599f85a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1901901124589115436, guid: 4204674dc81c50f4388c90e23599f85a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2
@@ -754,7 +807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1901901124589115436, guid: 4204674dc81c50f4388c90e23599f85a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 33.41
       objectReference: {fileID: 0}
     - target: {fileID: 1901901124589115436, guid: 4204674dc81c50f4388c90e23599f85a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -801,9 +854,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fantasy_Stag
       objectReference: {fileID: 0}
+    - target: {fileID: 2539167609974032822, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4906059119195285791, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: -3.59
       objectReference: {fileID: 0}
     - target: {fileID: 4906059119195285791, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -811,7 +868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4906059119195285791, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 16.12
       objectReference: {fileID: 0}
     - target: {fileID: 4906059119195285791, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -864,7 +921,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3163662261456022208, guid: e8569aee453e2ab499710c9351b0f87b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 8.2
       objectReference: {fileID: 0}
     - target: {fileID: 3163662261456022208, guid: e8569aee453e2ab499710c9351b0f87b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -897,6 +954,10 @@ PrefabInstance:
     - target: {fileID: 4503644625469622133, guid: e8569aee453e2ab499710c9351b0f87b, type: 3}
       propertyPath: m_Name
       value: Moose
+      objectReference: {fileID: 0}
+    - target: {fileID: 4503644625469622133, guid: e8569aee453e2ab499710c9351b0f87b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
