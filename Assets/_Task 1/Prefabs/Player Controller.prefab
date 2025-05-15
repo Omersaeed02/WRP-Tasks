@@ -122,14 +122,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mobDeleteTrigger: {fileID: 6232193890419871262}
   mobChecker: {fileID: 7421093581545355006}
-  cameraLocator: {fileID: 0}
   decal: {fileID: 8166450796945090683, guid: e4025073fa8379a4e9c548a3aeb6de5c, type: 3}
   playerAnimator: {fileID: 8744883167345731409}
   playerState: 0
   decalMask:
     serializedVersion: 2
     m_Bits: 9
-  maxSpeed: 5
+  maxSpeed: 7
   speed: 7
 --- !u!136 &2819557481090924619
 CapsuleCollider:

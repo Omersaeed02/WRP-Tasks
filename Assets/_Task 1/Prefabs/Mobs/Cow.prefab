@@ -81,7 +81,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1901901124589115436
 Transform:
   m_ObjectHideFlags: 0
@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40c36f51a7041f6449af9ccf71db23f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vel: {x: 0, y: 0, z: 0}
   playerPoint: {fileID: 3317876448814073350}
   strafeSpeed: 10
   stopped: 0

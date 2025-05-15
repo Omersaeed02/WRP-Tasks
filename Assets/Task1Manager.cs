@@ -14,21 +14,24 @@ public class Task1Manager : MonoBehaviour
     public Transform mobDeleteTrigger;
     
     public PlaneSO planeSO;
-    // public List<PlaneHandler> planes = new();
+    public MobSO rideableMobSO;
+    
+    private float _lastTriggerTime = -Mathf.Infinity;
+    private float _triggerCooldown = 1f;
+    private int _currentPlaneIndex;
     
     public List<PlaneHandler> spawnedPlanes { get; private set; }
-
-    public MobSO rideableMobSO;
-    // public List<GameObject> rideableMobs = new();
+    public List<MobHandler> spawnedMobs { get; private set; }
     
-    private int _currentPlaneIndex;
-
     
     private void Awake()
     {
+        Application.targetFrameRate = 120;
+        
         playerController.SetTaskManager(this);
         
         spawnedPlanes = new List<PlaneHandler>();
+        spawnedMobs = new List<MobHandler>();
         
         for (var i = 0; i < 9; i++)
         {
@@ -47,47 +50,49 @@ public class Task1Manager : MonoBehaviour
 
         _currentPlaneIndex = 1;
     }
-
+    
     private void OnEnable()
     {
-        if (playerController != null)
-        {
-            PlayerController.OnPlayerDowned += PlayerDowned;
-        }
+        PlayerController.OnPlayerDowned += PlayerDowned;
     }
-    
+
     private void OnDisable()
     {
-        if (playerController != null)
-        {
-            PlayerController.OnPlayerDowned -= PlayerDowned;
-        }
+        PlayerController.OnPlayerDowned -= PlayerDowned;
     }
 
-    public void PlayerDowned()
+    private void PlayerDowned()
     {
-        
+        UiManager.Instance.ShowGameOverMenu();
     }
     
-    private float _lastTriggerTime = -Mathf.Infinity;
-    private float _triggerCooldown = 1f;
-
     public void PlayerTriggeredPlaneEnd()
     {
         if (Time.time - _lastTriggerTime < _triggerCooldown)
             return;
 
         _lastTriggerTime = Time.time;
-
-        // Debug.Log("plane end triggered");
+        
+        SpawnMobs();
         
         ChangePosition();
         _currentPlaneIndex++;
     }
-    
-    public void ChangePosition()
+
+    private void SpawnMobs()
+    {
+        var mobIndex = Random.Range(0, rideableMobSO.mobs.Count);
+
+        var mob = Instantiate(rideableMobSO.mobs[mobIndex]);
+        mob.transform.position = new Vector3(Random.Range(-4.5f, 5.5f), 0f, 60 + mobDeleteTrigger.position.z);
+        spawnedMobs.Add(mob);
+    }
+
+    private void ChangePosition()
     {
         if (_currentPlaneIndex < 4) return;
+
+        spawnedPlanes.ForEach(t => t.planeEndTrigger.enabled = true);
         
         _currentPlaneIndex = 1;
         
@@ -118,11 +123,6 @@ public class Task1Manager : MonoBehaviour
     private void Update()
     {
         mobDeleteTrigger.position = playerController.mobDeleteTrigger.position;
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
     }
 }
 

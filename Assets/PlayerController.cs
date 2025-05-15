@@ -10,11 +10,6 @@ public class PlayerController : MonoBehaviour
 {
     public Task1Manager Task1Manager { get; private set; }
     
-    private Collider _collider;
-    private Rigidbody _rb;
-    private CameraHandler _cameraHandler;
-    private MobHandler _ridingMob;
-
     public Transform mobDeleteTrigger;
     public Transform mobChecker;
     public Transform decal;
@@ -23,13 +18,24 @@ public class PlayerController : MonoBehaviour
     public PlayerState playerState = PlayerState.Idle;
     public LayerMask decalMask;
     
-    public float maxSpeed = 5f;
-    
     public float speed = 7f;
-
+    
     public static Action OnPlayerDowned;
-    // public bool translateForward;
 
+    private bool _firstRideDone;
+    private float _maxSpeed = 7f;
+
+    private Collider _collider;
+    private Rigidbody _rb;
+    private CameraHandler _cameraHandler;
+    private MobHandler _ridingMob;
+    
+    private Transform _decalInstance;
+    private GameObject _mobInCheck;
+    
+    private Vector2 _startTouchPos;
+    private Vector2 _currentTouchPos;
+    
     private Coroutine _beneathCheckCoroutine;
     
     public void SetTaskManager(Task1Manager tm)
@@ -54,35 +60,77 @@ public class PlayerController : MonoBehaviour
     {
         OnPlayerDowned -= TouchGround;
     }
-
+    
     private void Update()
     {
+        //Lerp this shit omar when u get a chance
         _cameraHandler.transform.position = transform.position;
         
         SetAnimationState();
 
-        if (Input.GetKeyDown(KeyCode.Space) && _mobInCheck != null)
+        if (Input.touchCount > 0)
         {
-            CaptureMob();
+            var primaryTouch = Input.GetTouch(0);
+
+            if (primaryTouch.phase == TouchPhase.Began)
+            {
+                _startTouchPos = primaryTouch.position;
+            }
+            
+            if (primaryTouch.phase == TouchPhase.Began && _mobInCheck != null)
+            {
+                CaptureMob();
+            }
+
+            if (primaryTouch.phase == TouchPhase.Ended && playerState == PlayerState.Riding)
+            {
+                DOTween.Kill(transform);
+                transform.SetParent(null);
+
+                speed = _ridingMob.GetSpeed();
+            
+                _ridingMob.StopRunning();
+                _ridingMob.RemovePlayerController();
+
+                _collider.enabled = true;
+                _rb.useGravity = true;
+            
+                _rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
+                playerState = PlayerState.Jumping;
+                _beneathCheckCoroutine = StartCoroutine(ActivateBeneathCheckCoroutine());
+            }
+
+            if (primaryTouch.phase == TouchPhase.Moved && playerState == PlayerState.Riding)
+            {
+                _currentTouchPos = primaryTouch.position;
+                var delta = _currentTouchPos.x - _startTouchPos.x;
+                
+                if (Mathf.Abs(delta) > 10)
+                {
+                    switch (delta)
+                    {
+                        case > 0:
+                            _ridingMob?.StrafeMob(-1);
+                            break;
+                        case < 0:
+                            _ridingMob?.StrafeMob(1);
+                            break;
+                        case 0:
+                            _ridingMob?.StrafeMob(0);
+                            break;
+                    }
+                }
+                
+                _startTouchPos = _currentTouchPos;
+            }
+            
+            if (primaryTouch.phase == TouchPhase.Stationary && playerState == PlayerState.Riding)
+            {
+                _ridingMob?.StrafeMob(0);
+            }
         }
-
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && playerState == PlayerState.Riding)
-        {
-            transform.SetParent(null);
-
-            speed = _ridingMob.GetSpeed();
-            _ridingMob.StopRunning();
-            _ridingMob.RemovePlayerController();
-
-            _collider.enabled = true;
-            _rb.useGravity = true;
-            _rb.AddForce((transform.up * 2f + transform.forward) * 4f, ForceMode.Impulse);
-            playerState = PlayerState.Jumping;
-            _beneathCheckCoroutine = StartCoroutine(ActivateBeneathCheckCoroutine());
-        }
-
     }
-
+    
     private void FixedUpdate()
     {
         PlayerMovement();
@@ -92,35 +140,20 @@ public class PlayerController : MonoBehaviour
     private void LimitVelocity()
     {
         var horizontalVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
-        if (horizontalVelocity.magnitude > maxSpeed)
+        if (horizontalVelocity.magnitude > _maxSpeed)
         {
-            var clampedHorizontal = horizontalVelocity.normalized * maxSpeed;
+            var clampedHorizontal = horizontalVelocity.normalized * _maxSpeed;
             _rb.linearVelocity = new Vector3(clampedHorizontal.x, _rb.linearVelocity.y, clampedHorizontal.z);
         }
     }
     
     public void PlayerMovement()
     {
-        if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && playerState == PlayerState.Riding)
-        {
-            _ridingMob.StrafeMob(1);
-        }
-        else if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && playerState == PlayerState.Riding)
-        {
-            _ridingMob.StrafeMob(-1);
-        }
-        else if (playerState == PlayerState.Riding)
-        {
-            _ridingMob.StrafeMob(0);
-        }
-        
         if (playerState == PlayerState.Jumping || (playerState == PlayerState.Falling && _firstRideDone))
         {
             transform.Translate(Vector3.forward * (speed * Time.deltaTime));
         }
     }
-
-    private Transform _decalInstance;
 
     private void DeactivateBeneathCheckCoroutine()
     {
@@ -131,23 +164,16 @@ public class PlayerController : MonoBehaviour
         Destroy(_decalInstance.gameObject);
     }
     
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawRay(mobChecker.position, Vector3.down);
-    }
-    
     private IEnumerator ActivateBeneathCheckCoroutine()
     {
         var yieldReturn = new WaitForSecondsRealtime(0.02f);
-        
-        // var hits = new RaycastHit[4];
         
         _decalInstance = Instantiate(decal);
         
         while (true)
         {
             yield return yieldReturn;
-            var hits = Physics.SphereCastAll(mobChecker.position, 1f, Vector3.down, 25f, decalMask);
+            var hits = Physics.SphereCastAll(mobChecker.position, 1.5f, Vector3.down, 25f, decalMask);
             
             var sortedHits = hits.OrderBy(h => h.distance).ToArray();
             
@@ -165,7 +191,6 @@ public class PlayerController : MonoBehaviour
             
             if (hits.Any(t => t.transform.CompareTag("Mob")))
             {
-                // Debug.Log("Mob Found");
                 _mobInCheck = hits.First(t => t.transform.CompareTag("Mob")).transform.gameObject;
                 _mobInCheck.GetComponent<MobHandler>().HighlightMob();
                 
@@ -173,7 +198,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // Debug.Log("No Mob Found");
                 if (_mobInCheck != null)
                 {
                     _mobInCheck.GetComponent<MobHandler>().UnhighlightMob();
@@ -183,25 +207,7 @@ public class PlayerController : MonoBehaviour
                 Time.timeScale = 1f;
             }
             
-            // if (hit.collider != null)
-            // {
-            //     if (hit.collider.CompareTag("Mob"))
-            //     {
-            //         Time.timeScale = 0.5f;
-            //         break;
-            //     }
-            //     else
-            //     {
-            //         Time.timeScale = 1f;
-            //     }
-            // }
-            // else
-            // {
-            //     Time.timeScale = 1f;
-            // }
         }
-        // mobChecker.SetActive(true);
-        // Time.timeScale = 0.5f;
     }
     
     public void SetAnimationState()
@@ -229,17 +235,16 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
-    private GameObject _mobInCheck;
-    private bool _firstRideDone;
+    
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.CompareTag("Plane_End"))
         {
             Task1Manager.PlayerTriggeredPlaneEnd();
+            other.enabled = false;
         }
         
-        if (other.transform.CompareTag("Floor"))
+        if (other.transform.CompareTag("Floor") || other.transform.CompareTag("Obstacle") || (other.transform.CompareTag("Mob") && _firstRideDone))
         {
             OnPlayerDowned?.Invoke();
         }
@@ -248,13 +253,6 @@ public class PlayerController : MonoBehaviour
         {
             RideMob(other.gameObject);
             _firstRideDone = true;
-        }
-        
-        else if (other.transform.CompareTag("Mob"))
-        {
-            Debug.Log("mob in check");
-            Time.timeScale = 0.4f;
-            _mobInCheck = other.gameObject;
         }
     }
 
@@ -270,6 +268,7 @@ public class PlayerController : MonoBehaviour
 
     public void PlayerCollided()
     {
+        DOTween.Kill(transform);
         DeactivateBeneathCheckCoroutine();
         transform.SetParent(null);
         _rb.AddForce((transform.up + transform.forward) * 4f, ForceMode.Impulse);
@@ -280,20 +279,21 @@ public class PlayerController : MonoBehaviour
     
     public void TouchGround()
     {
+        DOTween.Kill(transform);
         DeactivateBeneathCheckCoroutine();
         Time.timeScale = 1f;
         _ridingMob = null;
         playerState = PlayerState.Downed;
         _rb.useGravity = false;
         _rb.linearVelocity = Vector3.zero;
-        transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
+
+        transform.DOMove(new Vector3(transform.position.x, 0f, transform.position.z), 0.5f);
     }
 
     public void CaptureMob()
     {
         DeactivateBeneathCheckCoroutine();
         Time.timeScale = 1f;
-        // mobChecker.SetActive(false);
         RideMob(_mobInCheck);
         _mobInCheck = null;
     }
@@ -318,7 +318,6 @@ public class PlayerController : MonoBehaviour
         transform.localPosition = Vector3.zero;
         _ridingMob.OnStartMoving();
 
-        // Collider.enabled = false;
         _ridingMob.AddComponent<Rigidbody>();
         _ridingMob.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
         playerState = PlayerState.Riding;

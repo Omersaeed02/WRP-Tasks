@@ -5,24 +5,23 @@ using Random = UnityEngine.Random;
 
 public class MobHandler : MonoBehaviour
 {
-    public Vector3 vel;
-    
-    private PlayerController _playerController;
-    private Collider _collider;
-    private Animator _animator;
-    private SkinnedMeshRenderer _skinnedMeshRenderer;
     public Transform playerPoint;
-
-    private readonly (float lower, float upper) _speedRange = (4.5f, 6.95f); 
-    private float _speed = 7f;
-    public float strafeSpeed = 10f;
     
     public bool stopped = true;
 
     public Material normalMaterial;
     public Material highlightedMaterial;
 
+    private PlayerController _playerController;
+    private Collider _collider;
+    private Animator _animator;
     private Rigidbody _rb;
+    private SkinnedMeshRenderer _skinnedMeshRenderer;
+
+    private readonly (float lower, float upper) _speedRange = (2f, 5f); 
+    private float _speed = 7f;
+    private float _strafeSpeed = 7f;
+    
     
     private void Awake()
     {
@@ -79,40 +78,32 @@ public class MobHandler : MonoBehaviour
     private void FixedUpdate()
     {
         if (stopped) return;
-
-        TryGetComponent<Rigidbody>(out _rb);
-        if (_rb)
-            vel = _rb.linearVelocity;
         
-        // var move = new Vector3(0, 0, Vector3.forward.z).normalized;
-        // transform.Translate(move * (_speed * Time.deltaTime), Space.World);
         transform.Translate(Vector3.forward * (_speed * Time.deltaTime), Space.World);
     }
 
     public void StrafeMob(int direction)
     {
-        Debug.Log(transform.rotation.y);
         switch (direction)
         {
             case 0:
                 transform.DORotateQuaternion(Quaternion.Euler(0,0,0), 0.1f);
                 break;
+            
             case > 0:
-                transform.Translate(Vector3.left * (strafeSpeed * Time.deltaTime));
+                transform.Translate(Vector3.left * (_strafeSpeed * Time.deltaTime));
                 if (transform.rotation.y > -0.15)
                 {
                     transform.Rotate(transform.up, -2);
-                    // transform.DORotateQuaternion(Quaternion.Euler(0,-30,0), 0.1f);
                 }
                 break;
+            
             case < 0:
-                transform.Translate(Vector3.right * (strafeSpeed * Time.deltaTime));
+                transform.Translate(Vector3.right * (_strafeSpeed * Time.deltaTime));
                 if (transform.rotation.y < 0.15)
                 {
                     transform.Rotate(transform.up, 2);
-                    // transform.DORotateQuaternion(Quaternion.Euler(0,30,0), 0.1f);
                 }
-                // transform.rotation = Quaternion.Euler(0,30,0);
                 break;
             
         }
@@ -133,6 +124,7 @@ public class MobHandler : MonoBehaviour
         if (other.transform.CompareTag("Plane_End"))
         {
             _playerController.Task1Manager.PlayerTriggeredPlaneEnd();
+            other.enabled = false;
         }
 
         if (other.transform.CompareTag("DeleteTrigger"))
@@ -144,12 +136,13 @@ public class MobHandler : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.transform.CompareTag("Obstacle"))
+        if (other.transform.CompareTag("Obstacle") || other.transform.CompareTag("Mob"))
         {
+            Debug.Log(transform.name);
             _speed = 0;
             var temp = _playerController;
             RemovePlayerController();
-            temp.PlayerCollided();
+            temp?.PlayerCollided();
             _animator.Play("Death");
         }
     }

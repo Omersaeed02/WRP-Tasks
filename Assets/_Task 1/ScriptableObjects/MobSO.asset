@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea9282307fb84ec40817ac8e0be2723c, type: 3}
   m_Name: MobSO
   m_EditorClassIdentifier: 
-  mobs: []
+  mobs:
+  - {fileID: 7137900932573265956, guid: c5776a8f883d5314cace602bf00797d6, type: 3}
+  - {fileID: 3495253795082658963, guid: 4204674dc81c50f4388c90e23599f85a, type: 3}
+  - {fileID: 6957893813199220697, guid: 1db26f05ca433744e895a1a9da7da5f9, type: 3}
+  - {fileID: 7540949217637900632, guid: e6f99dacb66108b45a52b551ecdc107c, type: 3}
+  - {fileID: 808850983653275833, guid: e8569aee453e2ab499710c9351b0f87b, type: 3}

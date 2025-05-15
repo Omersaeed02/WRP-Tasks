@@ -216,7 +216,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 683090364452136917}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -897,6 +897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planeIndex: 0
   obstacleParent: {fileID: 8064826796780062161}
+  planeEndTrigger: {fileID: 1749580037312436101}
   obstacleSO: {fileID: 11400000, guid: bb6dfb277e49a984b9de8e8a0cd63ce3, type: 2}
 --- !u!1 &3737112442133335263
 GameObject:
