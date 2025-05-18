@@ -66,6 +66,7 @@ public class ObjectManipulation : MonoBehaviour
 
     public void SelectObject(ShapeHandler shape)
     {
+        AudioManager.Instance?.PlaySelectSound();
         selectedShape = shape;
         shapeName.text = selectedShape.name;
         _animator.Play("Menu In");

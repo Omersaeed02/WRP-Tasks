@@ -22,6 +22,8 @@ public class SliderHandler : MonoBehaviour
 
     private void ChangeObjectTransform()
     {
+        if (_objectManipulation.selectedShape == null) return;
+        
         var position = _objectManipulation.selectedShape.transform.position;
         var rotation = _objectManipulation.selectedShape.transform.rotation.eulerAngles;
         var scale = _objectManipulation.selectedShape.transform.localScale;

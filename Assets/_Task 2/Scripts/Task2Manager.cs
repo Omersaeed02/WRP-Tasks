@@ -1,14 +1,14 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Task2Manager : MonoBehaviour
 {
-    public void ReloadScene()
+    private void Awake()
     {
-        var sceneName = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(sceneName);
+        AudioManager.Instance?.PlayTask2BackgroundMusic();
+        Debug.Log("Task 2");
     }
-    
     
     public static Vector3 ConvertOriginWrtObject(Transform origin, Transform change)
     {
