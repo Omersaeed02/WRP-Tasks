@@ -12,20 +12,7 @@ public class OverlapDetector : MonoBehaviour
 
     public Material valid;
     public Material invalid;
-
-
-    // private void OnDrawGizmos()
-    // {
-    //     if (sphereReference == null || cuboidReference == null) return;
-    //
-    //     var overlap = DoesOverlap(sphereReference, cuboidReference);
-    //
-    //     // Draw sphere center
-    //     Gizmos.color = overlap ? Color.red : Color.green;
-    //     Gizmos.DrawSphere(sphereReference.transform.position, 0.05f);
-    //     
-    // }
-
+    
     private void Update()
     {
         if (sphereReference == null || cuboidReference == null) return;
@@ -46,11 +33,9 @@ public class OverlapDetector : MonoBehaviour
 
     public bool DoesOverlap(GameObject sphere, GameObject box)
     {
-        // 1) sphere center & radius (world‑space)
         var spherePos = sphere.transform.position;
         var sphereRadius = sphere.transform.lossyScale.x * 0.5f; 
 
-        // 2) box center, local axes, half‑extents
         var boxPos = box.transform.position;
         var axes = new[] {
             box.transform.right,
@@ -60,7 +45,6 @@ public class OverlapDetector : MonoBehaviour
         
         var boxSize = box.transform.lossyScale * 0.5f;
 
-        // 3) find the closest point on the (oriented) box to the sphere center
         var shapesDelta = spherePos - boxPos;
         var closestPoint = boxPos;
         
@@ -71,7 +55,6 @@ public class OverlapDetector : MonoBehaviour
             closestPoint += axes[i] * clampedDist;
         }
 
-        // 4) sphere‑to‑closest distance test
         var sqrDistance = (spherePos - closestPoint).sqrMagnitude;
 
         var isOverlap = (sqrDistance <= sphereRadius * sphereRadius);

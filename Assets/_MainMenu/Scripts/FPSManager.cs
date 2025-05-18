@@ -6,11 +6,6 @@ public class FPSManager : MonoBehaviour
 {
     private float _count;
 
-    private void Awake()
-    {
-        // Application.targetFrameRate = 120;
-    }
-
     private IEnumerator Start()
     {
         GUI.depth = 2;

@@ -23,13 +23,14 @@ public class PlayerController : MonoBehaviour
     
     public static Action OnPlayerDowned;
 
+    private bool _canUpdate;
     private bool _firstRideDone;
     private bool _deathOnce;
     private float _maxSpeed = 7f;
 
     private Collider _collider;
     private Rigidbody _rb;
-    private CameraHandler _cameraHandler;
+    private Task1CameraHandler _task1CameraHandler;
     private MobHandler _ridingMob;
     
     private Transform _decalInstance;
@@ -47,12 +48,19 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _cameraHandler = Task1Manager.cameraHandler;
+        _task1CameraHandler = Task1Manager.task1CameraHandler;
         _collider = GetComponent<Collider>();
         _rb = GetComponent<Rigidbody>();
         playerState = PlayerState.Falling;
+        
+        Invoke(nameof(EnableUpdate), 0.5f);
     }
 
+    public void EnableUpdate()
+    {
+        _canUpdate = true;
+    }
+    
     private void OnEnable()
     {
         OnPlayerDowned += TouchGround;
@@ -65,9 +73,9 @@ public class PlayerController : MonoBehaviour
     
     private void Update()
     {
-        //Lerp this shit omar when u get a chance
-        // _cameraHandler.transform.position = transform.position;
-        _cameraHandler.transform.position = Vector3.Lerp(_cameraHandler.transform.position, transform.position, Time.deltaTime * 3f); 
+        if (!_canUpdate) return;
+        
+        _task1CameraHandler.transform.position = Vector3.Lerp(_task1CameraHandler.transform.position, transform.position, Time.deltaTime * 3f); 
         
         SetAnimationState();
 
@@ -162,7 +170,6 @@ public class PlayerController : MonoBehaviour
     {
         if (playerState == PlayerState.Jumping || (playerState == PlayerState.Falling && _firstRideDone))
         {
-            // transform.Translate(Vector3.forward * (speed * Time.deltaTime));
             _rb.MovePosition(_rb.position + transform.forward * (speed * Time.fixedDeltaTime));
         }
     }
@@ -294,8 +301,8 @@ public class PlayerController : MonoBehaviour
         _collider.enabled = true;
         playerState = PlayerState.Downed;
     }
-    
-    public void TouchGround()
+
+    private void TouchGround()
     {
         collisionParticle.SetActive(true);
         DOTween.Kill(transform);
@@ -309,15 +316,15 @@ public class PlayerController : MonoBehaviour
         transform.DOMove(new Vector3(transform.position.x, 0f, transform.position.z), 0.5f);
     }
 
-    public void CaptureMob()
+    private void CaptureMob()
     {
         DeactivateBeneathCheckCoroutine();
         Time.timeScale = 1f;
         RideMob(_mobInCheck);
         _mobInCheck = null;
     }
-    
-    public void RideMob(GameObject mob)
+
+    private void RideMob(GameObject mob)
     {
         DeactivateBeneathCheckCoroutine();
         playerState = PlayerState.Riding;

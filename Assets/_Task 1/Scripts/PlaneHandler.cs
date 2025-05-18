@@ -12,7 +12,6 @@ public class PlaneHandler : MonoBehaviour
     public Transform obstacleParent;
     public Collider planeEndTrigger;
     public ObstacleSO obstacleSO;
-    // public List<Transform> obstacles;
     
     private readonly (float negX, float posX, float negZ, float posZ) _obstacleSpawnRange = (-2.5f, 3.5f, -4f, 4f);
 

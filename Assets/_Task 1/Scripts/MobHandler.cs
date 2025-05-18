@@ -91,7 +91,7 @@ public class MobHandler : MonoBehaviour
             float strafeDir = direction < 0 ? 1 : -1;
             transform.Translate(Vector3.right * (strafeDir * (_strafeSpeed * Time.deltaTime)));
         
-            var targetRotationY = strafeDir * 15f; // Maximum 15 degree rotation
+            var targetRotationY = strafeDir * 15f;
             var currentRotation = transform.rotation.eulerAngles;
             var newRotationY = Mathf.LerpAngle(currentRotation.y, targetRotationY, Time.deltaTime * 5f);
             transform.rotation = Quaternion.Euler(currentRotation.x, newRotationY, currentRotation.z);

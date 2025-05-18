@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -5,9 +6,17 @@ using UnityEngine.SceneManagement;
 public class PauseMenuManager : MonoBehaviour
 {
     public GameObject pauseMenu;
+
+    private Task2Manager _task2Manager;
     
+    private void Start()
+    {
+        _task2Manager = GetComponent<Task2Manager>();
+    }
+
     public void PauseGame()
     {
+        _task2Manager.task2CameraManager.isCameraLocked = true;
         AudioManager.Instance?.PlayButtonSound();
         GetComponent<ObjectManipulation>().DeselectObject();
         pauseMenu.SetActive(true);
@@ -16,6 +25,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ResumeGame()
     {
+        _task2Manager.task2CameraManager.isCameraLocked = false;
         AudioManager.Instance?.PlayButtonSound();
         pauseMenu.transform.DOScale(0f, 0.75f);
         Invoke(nameof(ResumeGameWithDelay), 0.75f);

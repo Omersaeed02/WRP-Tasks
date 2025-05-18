@@ -46,25 +46,23 @@ public class ObjectManipulation : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) // 0 = left click or tap
-        {
-            var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (!Input.GetMouseButtonDown(0) || EventSystem.current.IsPointerOverGameObject()) return; // 0 = left click or tap
+        
+        var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out var hit))
-            {
-                if (hit.transform.TryGetComponent<ShapeHandler>(out var shape))
-                {
-                    SelectObject(shape);
-                }
-                else
-                {
-                    DeselectObject();
-                }
-            }
+        if (!Physics.Raycast(ray, out var hit)) return;
+        
+        if (hit.transform.TryGetComponent<ShapeHandler>(out var shape))
+        {
+            SelectObject(shape);
+        }
+        else
+        {
+            DeselectObject();
         }
     }
 
-    public void SelectObject(ShapeHandler shape)
+    private void SelectObject(ShapeHandler shape)
     {
         AudioManager.Instance?.PlaySelectSound();
         selectedShape = shape;

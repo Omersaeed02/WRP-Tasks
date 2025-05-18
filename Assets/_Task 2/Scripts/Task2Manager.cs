@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class Task2Manager : MonoBehaviour
 {
+    public Task2CameraManager task2CameraManager;
+    
     private void Awake()
     {
         AudioManager.Instance?.PlayTask2BackgroundMusic();
@@ -14,13 +16,10 @@ public class Task2Manager : MonoBehaviour
     {
         var offset = origin.position - change.position;
 
-        // 2. Manually compute inverse rotation (conjugate)
         var inverseBRotation = MyInverse(change.rotation);
 
-        // 3. Apply inverse rotation to the offset (manual quaternion-vector rotation)
         var localPosInB = RotateVectorByQuaternion(offset, inverseBRotation);
 
-        // (Optional) Adjust for scale
         localPosInB.x /= change.localScale.x;
         localPosInB.y /= change.localScale.y;
         localPosInB.z /= change.localScale.z;
@@ -36,11 +35,9 @@ public class Task2Manager : MonoBehaviour
     
     public static Vector3 RotateVectorByQuaternion(Vector3 v, Quaternion q)
     {
-        // Extract the vector part of the quaternion
         var u = new Vector3(q.x, q.y, q.z);
         var s = q.w;
 
-        // Apply rotation formula: v' = v + 2u × (s v + u × v)
         var uCrossV = Vector3.Cross(u, v);
         var rotated = v + 2f * Vector3.Cross(u, s * v + uCrossV);
 

@@ -16,11 +16,14 @@ public class ExperienceManager : MonoBehaviour
 
     public void LoadTaskOne()
     {
+        AudioManager.Instance?.PlayButtonSound();
         SceneManager.LoadScene(taskOne);
     }
 
     public void LoadTaskTwo()
     {
+        AudioManager.Instance?.PlayButtonSound();
         SceneManager.LoadScene(taskTwo);
     }
 }
+

@@ -10,7 +10,7 @@ public class Task1Manager : MonoBehaviour
     public bool makeObstaclesUnique;
     
     public PlayerController playerController;
-    public CameraHandler cameraHandler;
+    [FormerlySerializedAs("cameraHandler")] public Task1CameraHandler task1CameraHandler;
     public Transform mobDeleteTrigger;
     
     public PlaneSO planeSO;
@@ -196,9 +196,7 @@ public static class Probability
             if (rand <= currentProb)
                 return selection.GetValue();
         }
-
-        //will happen if the input's probabilities sums to less than 1
-        //throw error here if that's appropriate
+        
         return -1;
     }
 }
