@@ -133,7 +133,6 @@ public class MobHandler : MonoBehaviour
     {
         if (other.transform.CompareTag("Obstacle") || other.transform.CompareTag("Mob"))
         {
-            Debug.Log(transform.name);
             _speed = 0;
             var temp = _playerController;
             RemovePlayerController();

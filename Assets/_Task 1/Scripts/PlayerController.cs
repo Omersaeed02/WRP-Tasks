@@ -88,6 +88,7 @@ public class PlayerController : MonoBehaviour
         switch (primaryTouch.phase)
         {
             case TouchPhase.Began:
+                Debug.Log("Began");
                 if (_mobInCheck != null)
                 {
                     CaptureMob();
@@ -99,6 +100,7 @@ public class PlayerController : MonoBehaviour
                 break;
             
             case TouchPhase.Moved:
+                Debug.Log("Move");
                 if (playerState == PlayerState.Riding)
                 {
                     _currentTouchPos = primaryTouch.position;
@@ -121,10 +123,12 @@ public class PlayerController : MonoBehaviour
                 break;
             
             case TouchPhase.Stationary:
+                Debug.Log("Station");
                 if (playerState == PlayerState.Riding) _ridingMob?.StrafeMob(0);
                 break;
             
             case TouchPhase.Ended:
+                Debug.Log("End");
                 if (playerState == PlayerState.Riding) PlayerJump();
                 break;
         }
@@ -293,6 +297,7 @@ public class PlayerController : MonoBehaviour
 
     public void PlayerCollided()
     {
+        _ridingMob = null;
         DOTween.Kill(transform);
         DeactivateBeneathCheckCoroutine();
         transform.SetParent(null);
